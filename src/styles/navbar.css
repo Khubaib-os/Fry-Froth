@@ -1,0 +1,178 @@
+/* Navbar Container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+  }
+
+  .heading {
+    font-size: 2rem;
+  }
+
+  .navbar-right {
+    gap: 10px;
+  }
+
+  /* Adjust icon size for smaller screens */
+  .icon-btn {
+    min-width: 35px;
+    padding: 0.4rem;
+  }
+
+  .icon-btn svg {
+    font-size: 24px; /* Slightly smaller icons on mobile */
+  }
+
+  /* Adjust badge size for smaller screens */
+  .cart-count {
+    top: -4px;
+    right: -4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+  }
+}
+
+/* Left Section */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.logo-img {
+  height: 50px;
+  margin-right: 10px;
+  width: 100px;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Right Section */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border: 1px solid #333;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  font-size: 14px;
+}
+
+.signUp {
+  background-color: #36454f;
+  color: whitesmoke;
+}
+
+.logIn {
+  color: #36454f;
+}
+
+.signUp:hover,
+.logIn:hover {
+  transform: scale(1.07);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.signUp:hover {
+  color: whitesmoke;
+}
+
+.logIn:hover {
+  background-color: #333;
+  color: white;
+}
+
+/* Icon Buttons */
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.3s ease-in-out;
+  min-width: 42px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn svg {
+  font-size: 28px;
+  color: #00bfff;
+  transition: color 0.3s ease-in-out;
+}
+
+.icon-btn:hover svg {
+  color: #009acd; /* Darker icon color on hover */
+}
+
+/* Home Button */
+.home-icon {
+  margin-right: 10px; /* Add spacing between home and other buttons */
+}
+
+/* Admin Panel Button */
+.admin-icon {
+  margin-right: 10px; /* Add spacing between admin and cart icons */
+}
+
+/* Cart Badge */
+.cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(45deg, #ffcc00, #ff4500);
+  color: white;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  z-index: 1001;
+  border: 1.5px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.cart-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
