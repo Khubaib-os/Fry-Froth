@@ -1,0 +1,147 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("/bg3.jpg") no-repeat center center/cover;
+    padding: 20px;
+}
+
+/* Background Overlay */
+.section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(1px);
+    z-index: 0;
+}
+
+/* Forgot Password Container */
+.forgot-password-container {
+    position: relative;
+    z-index: 1;
+    max-width: 450px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Title Styling */
+h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form Styling */
+.forgot-password-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+    color: white; /* Add this */
+}
+
+/* Labels */
+.forgot-password-form .form-group label {
+    font-weight: 600;
+    font-size: 15px;
+    color: white !important; /* Force white color */
+}
+
+/* Input Fields */
+input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease-in-out;
+    outline: none;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+input:focus {
+    border-color: #ff6b00;
+    box-shadow: 0px 4px 10px rgba(255, 107, 0, 0.4);
+}
+
+/* Error Messages */
+.error-message {
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Submit Button */
+.btn {
+    padding: 12px;
+    border: none;
+    background: linear-gradient(45deg, #ff9900, #ff4500);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background: linear-gradient(45deg, #ff6b00, #d62828);
+    transform: scale(1.05);
+}
+
+/* Success Message */
+.success-message {
+    font-size: 16px;
+    color: #28a745;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+/* Back to Login Link */
+.back-to-login {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.back-to-login a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.back-to-login a:hover {
+    text-decoration: underline;
+    color: #ffcc00;
+}
