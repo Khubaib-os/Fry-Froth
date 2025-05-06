@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import "../styles/AdminPanel.css";
 
 const UsersPage = () => {
@@ -94,10 +95,12 @@ const UsersPage = () => {
 
   return (
     <div className="card">
-      <h2>Users Management</h2>
+      <h2>Users Page</h2>
 
       {/* Search and Filters */}
       <div className="admin-controls">
+      <div className="search-container">
+      <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder="Search by name or email..."
@@ -105,6 +108,7 @@ const UsersPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
+        </div>
         <select
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
