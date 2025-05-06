@@ -4,8 +4,9 @@
   min-height: 100vh;
   background-color: #f8f9fa;
   font-family: 'Inter', sans-serif;
-  margin-top: 120px;
 }
+
+
 
 /* Sidebar */
 .sidebar {
@@ -371,8 +372,6 @@ table tr:hover td {
   }
 }
 
-
-/* Users Table */
 /* Users Table */
 .users-table {
   overflow-x: auto;
@@ -454,4 +453,172 @@ table tr:hover td {
   background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 20px;
+}
+.admin-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.time-dropdown {
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #00bfff;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.time-dropdown{
+  border-color: #00bfff;
+  background-color: whitesmoke;
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+}
+
+.export-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.export-button {
+  padding: 8px 14px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.export-button:hover {
+  background-color: #218838; 
+  transform: scale(1.05); 
+}
+
+/* Modal Background */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden; /* Disable background scrolling */
+  animation: fadeIn 0.3s ease-out; /* Smooth fade-in effect */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: 12px; /* Rounded corners */
+  width: 450px; /* Fixed width for the modal */
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  max-height: 80vh;
+  overflow-y: auto; /* Scroll if content overflows */
+  animation: slideUp 0.5s ease-out; /* Slide-up effect */
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Close Button (×) */
+.modal-content::before {
+  content: "×";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.modal-content::before:hover {
+  color: #f44336; /* Red color for close button hover */
+}
+
+/* Form Header */
+.modal-content h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Form Fields */
+.modal-content input[type="text"],
+.modal-content input[type="email"],
+.modal-content select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Focus Effect on Input Fields */
+.modal-content input[type="text"]:focus,
+.modal-content input[type="email"]:focus,
+.modal-content select:focus {
+  border-color: #4CAF50; /* Green border on focus */
+  outline: none;
+}
+
+/* Submit Button */
+.modal-actions button {
+  background-color: #4CAF50; /* Green color */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 48%;
+  margin-right: 4%;
+}
+
+.modal-actions button:last-child {
+  background-color: #f44336; /* Red for Cancel */
+}
+
+.modal-actions button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.modal-actions button:last-child:hover {
+  background-color: #e53935; /* Darker red on hover */
+}
+
+/* Modal Action Buttons Container */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
 }

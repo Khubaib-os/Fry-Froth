@@ -8,7 +8,7 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
-    fullName: Yup.string()
+    name: Yup.string()        // 🟰 ✅ changed from fullName -> name
       .min(3, "Full Name must be at least 3 characters")
       .required("Full Name is required"),
     email: Yup.string()
@@ -33,46 +33,59 @@ const Signup = () => {
   });
 
   const initialValues = {
-    fullName: "",
+    name: "",          // ✅ Good
     email: "",
     password: "",
     confirmPassword: "",
     terms: false,
   };
 
-  const handleSubmit = (values, { resetForm, setSubmitting }) => {
-    console.log("Signup Data:", values);
-
-    // Create a user object to store in localStorage
-    const user = {
-      id: Date.now(), // Unique ID for the user
-      fullName: values.fullName,
-      email: values.email,
-      password: values.password, 
-      status: "Active", 
-      role: "Customer", 
-    };
-
-    // Retrieve existing users from localStorage
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-
-    // Add the new user to the list
-    const updatedUsers = [...existingUsers, user];
-
-    // Save the updated list back to localStorage
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // Save current user data to localStorage for session management
-    localStorage.setItem("user", JSON.stringify(user));
-
-    // Simulate a delay for submission
-    setTimeout(() => {
-      alert("Signup Successful!");
+  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
+    try {
+      const response = await fetch(
+        "https://localhost:7183/api/RegisterUser/RegisterUser",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            password: values.password,
+            confirmPassword: values.confirmPassword,
+          }),
+        }
+      );
+  
+      // 1) Read the entire body as text exactly once
+      const raw = await response.text();
+      console.log("Raw response:", raw);
+  
+      // 2) Try to parse JSON; if it fails, wrap the text in an object
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = { message: raw };
+      }
+  
+      // 3) Now branch on HTTP status
+      if (response.ok) {
+        console.log("Success:", data);
+        alert(data.message || "Signup successful!");
+        resetForm();
+        navigate("/login");
+      } else {
+        console.error("Server Error:", data);
+        alert(data.message || "Signup failed. Please try again.");
+      }
+    } catch (networkError) {
+      console.error("Network Error:", networkError);
+      alert("An error occurred. Please try again later.");
+    } finally {
       setSubmitting(false);
-      resetForm(); 
-      navigate("/login"); 
-    }, 1000);
+    }
   };
+  
 
   return (
     <div className="section">
@@ -89,13 +102,13 @@ const Signup = () => {
                 <label htmlFor="fullName">Full Name:</label>
                 <Field
                   type="text"
-                  name="fullName"
+                  name="name"            // ✅ Correct field name
                   id="fullName"
                   className="form-input"
                   placeholder="Enter your full name"
                 />
                 <ErrorMessage
-                  name="fullName"
+                  name="name"
                   component="div"
                   className="error-message"
                 />

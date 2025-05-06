@@ -19,10 +19,10 @@ const Navbar = ({ cart }) => {
           <FaHome size={30} color="#00BFFF" />
         </Link>
 
-        {/* Admin Panel Button */}
+        {/* Admin Panel Button
         <Link to="/admin" className="icon-btn admin-icon">
           <FaUserCog size={30} color="#00BFFF" />
-        </Link>
+        </Link> */}
 
         {/* User Profile Icon */}
         <Link to="/profile" className="icon-btn profile-icon">

@@ -5,6 +5,10 @@ import * as Yup from "yup";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/CartPage.css";
 
+// Import Toast library
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // ✅ Just import, no configure needed
+
 const CartPage = ({ cart, setCart }) => {
   const navigate = useNavigate();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -12,25 +16,21 @@ const CartPage = ({ cart, setCart }) => {
   const [discount, setDiscount] = useState(0);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-  // Load cart from localStorage on component mount
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(savedCart);
   }, [setCart]);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Remove item from cart
   const removeFromCart = (itemName) => {
     setCart((prevCart) => prevCart.filter((item) => item.name !== itemName));
   };
 
-  // Update quantity of an item with debouncing
   const updateQuantity = (itemName, newQuantity) => {
-    if (newQuantity < 1 || newQuantity > 10) return; // Limit quantity to 10
+    if (newQuantity < 1 || newQuantity > 10) return;
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.name === itemName ? { ...item, quantity: newQuantity } : item
@@ -38,7 +38,6 @@ const CartPage = ({ cart, setCart }) => {
     );
   };
 
-  // Calculate total price with discount
   const calculateTotal = () => {
     const subtotal = cart.reduce((total, item) => {
       const price = parseFloat(item.price.replace("$", ""));
@@ -47,17 +46,15 @@ const CartPage = ({ cart, setCart }) => {
     return subtotal - (subtotal * discount) / 100;
   };
 
-  // Apply discount code
   const applyDiscount = () => {
     if (discountCode === "SAVE10") {
-      setDiscount(10); // 10% discount
-      alert("Discount applied!");
+      setDiscount(10);
+      toast.success("Discount applied!", { position: "top-center" });
     } else {
-      alert("Invalid discount code");
+      toast.error("Invalid discount code", { position: "top-center" });
     }
   };
 
-  // Formik and Yup validation
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -75,36 +72,60 @@ const CartPage = ({ cart, setCart }) => {
         .required("Delivery address is required")
         .min(10, "Address must be at least 10 characters"),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       setShowConfirmationModal(true);
     },
   });
 
-  // Confirm order placement
+  const generateOrderId = () => {
+    return Math.floor(1000 + Math.random() * 9000);
+  };
+
   const confirmOrder = async () => {
     setIsPlacingOrder(true);
 
-    // Create order object
-    const newOrder = {
-      id: Date.now(), // Unique order ID
-      customerName: formik.values.name,
-      customerPhone: formik.values.phone,
-      customerAddress: formik.values.address,
-      items: cart,
-      total: calculateTotal(),
-      status: "pending", // Default status
-    };
+    try {
+      const newOrder = {
+        id: generateOrderId(),
+        productName: cart.map(item => item.name).join(", "),
+        productPrice: cart
+          .reduce((total, item) => total + parseFloat(item.price.replace("$", "")) * item.quantity, 0)
+          .toFixed(2),
+        userName: formik.values.name,
+        phone: formik.values.phone,
+        userAddress: formik.values.address,
+        status: "pending",
+        bill: calculateTotal().toFixed(2),
+        created: new Date().toISOString(),
+      };
 
-    // Save order to localStorage
-    const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    savedOrders.push(newOrder);
-    localStorage.setItem("orders", JSON.stringify(savedOrders));
+      const response = await fetch('https://localhost:7183/api/Product/AddToCart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newOrder)
+      });
 
-    // Clear cart and redirect
-    setCart([]);
-    navigate("/");
-    setIsPlacingOrder(false);
-    setShowConfirmationModal(false);
+      if (!response.ok) {
+        throw new Error(`Failed to place order. Status: ${response.status}`);
+      }
+
+      const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+      savedOrders.push(newOrder);
+      localStorage.setItem("orders", JSON.stringify(savedOrders));
+
+      toast.success("Order placed successfully! 🎉", { position: "top-center" });
+
+      setCart([]);
+      navigate("/");
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast.error("Failed to place order. Please try again.", { position: "top-center" });
+    } finally {
+      setIsPlacingOrder(false);
+      setShowConfirmationModal(false);
+    }
   };
 
   return (
@@ -120,7 +141,7 @@ const CartPage = ({ cart, setCart }) => {
         <>
           <ul className="cart-items">
             <AnimatePresence>
-              {cart.map((item, index) => {
+              {cart.map((item) => {
                 const itemPrice = parseFloat(item.price.replace("$", "")) * item.quantity;
                 return (
                   <motion.li
@@ -136,25 +157,11 @@ const CartPage = ({ cart, setCart }) => {
                       <p>Price: ${parseFloat(item.price).toFixed(2)}</p>
                       <p>Total: ${itemPrice.toFixed(2)}</p>
                       <div className="quantity-controls">
-                        <button
-                          aria-label="Decrease quantity"
-                          onClick={() => updateQuantity(item.name, item.quantity - 1)}
-                        >
-                          -
-                        </button>
+                        <button onClick={() => updateQuantity(item.name, item.quantity - 1)}>-</button>
                         <span>{item.quantity}</span>
-                        <button
-                          aria-label="Increase quantity"
-                          onClick={() => updateQuantity(item.name, item.quantity + 1)}
-                        >
-                          +
-                        </button>
+                        <button onClick={() => updateQuantity(item.name, item.quantity + 1)}>+</button>
                       </div>
-                      <button
-                        aria-label="Remove item"
-                        className="remove-item"
-                        onClick={() => removeFromCart(item.name)}
-                      >
+                      <button className="remove-item" onClick={() => removeFromCart(item.name)}>
                         Remove
                       </button>
                     </div>
@@ -163,6 +170,7 @@ const CartPage = ({ cart, setCart }) => {
               })}
             </AnimatePresence>
           </ul>
+
           <div className="discount-section">
             <input
               type="text"
@@ -174,7 +182,6 @@ const CartPage = ({ cart, setCart }) => {
           </div>
           <p className="cart-total">Grand Total: ${calculateTotal().toFixed(2)}</p>
 
-          {/* Address Form with Formik */}
           <form className="address-form" onSubmit={formik.handleSubmit}>
             <h3>Delivery Details</h3>
             <div className="form-group">
@@ -188,9 +195,9 @@ const CartPage = ({ cart, setCart }) => {
                 onBlur={formik.handleBlur}
                 value={formik.values.name}
               />
-              {formik.touched.name && formik.errors.name ? (
+              {formik.touched.name && formik.errors.name && (
                 <div className="error-message">{formik.errors.name}</div>
-              ) : null}
+              )}
             </div>
             <div className="form-group">
               <label htmlFor="phone">Phone Number</label>
@@ -203,9 +210,9 @@ const CartPage = ({ cart, setCart }) => {
                 onBlur={formik.handleBlur}
                 value={formik.values.phone}
               />
-              {formik.touched.phone && formik.errors.phone ? (
+              {formik.touched.phone && formik.errors.phone && (
                 <div className="error-message">{formik.errors.phone}</div>
-              ) : null}
+              )}
             </div>
             <div className="form-group">
               <label htmlFor="address">Delivery Address</label>
@@ -218,32 +225,23 @@ const CartPage = ({ cart, setCart }) => {
                 onBlur={formik.handleBlur}
                 value={formik.values.address}
               ></textarea>
-              {formik.touched.address && formik.errors.address ? (
+              {formik.touched.address && formik.errors.address && (
                 <div className="error-message">{formik.errors.address}</div>
-              ) : null}
+              )}
             </div>
             <div className="form-buttons">
               <button type="submit" className="place-order-button" disabled={isPlacingOrder}>
                 {isPlacingOrder ? "Placing Order..." : "Place Order"}
               </button>
-              <button
-                type="button"
-                className="clear-cart-button"
-                onClick={() => setCart([])}
-              >
+              <button type="button" className="clear-cart-button" onClick={() => setCart([])}>
                 Clear Cart
               </button>
-              <button
-                type="button"
-                className="continue-shopping-button"
-                onClick={() => navigate("/")}
-              >
+              <button type="button" className="continue-shopping-button" onClick={() => navigate("/")}>
                 Continue Shopping
               </button>
             </div>
           </form>
 
-          {/* Confirmation Modal */}
           {showConfirmationModal && (
             <div className="confirmation-modal">
               <p>Are you sure you want to place the order?</p>

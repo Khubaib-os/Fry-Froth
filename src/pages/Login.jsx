@@ -32,14 +32,51 @@ const Login = () => {
     rememberMe: false,
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    console.log("Login Data:", values);
-    setTimeout(() => {
-      alert("Login Successful!");
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      const response = await fetch("https://localhost:7183/api/RegisterUser/LoginUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "*/*"
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password
+        })
+      });
+  
+      const raw = await response.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = { message: raw };
+      }
+  
+      if (response.ok) {
+        console.log("Login Successful:", data);
+        alert(data.message || "Login successful!");
+  
+        // ✅ Check the user's role and redirect accordingly
+        if (data.role && data.role.toLowerCase() === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      } else {
+        console.error("Login Failed:", data);
+        alert(data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network Error:", error);
+      alert("A network error occurred. Please try again later.");
+    } finally {
       setSubmitting(false);
-      navigate("/");
-    }, 1000);
+    }
   };
+
+  
 
   return (
     <div className="section">

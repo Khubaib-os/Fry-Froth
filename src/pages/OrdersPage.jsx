@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { FaSearch } from "react-icons/fa";
 import "../styles/AdminPanel.css";
 
@@ -6,26 +6,47 @@ import "../styles/AdminPanel.css";
 const useOrders = () => {
   const [orders, setOrders] = useState([]);
 
-  // Load orders from localStorage on component mount
-  React.useEffect(() => {
+  // Load orders from backend API on component mount
+  const fetchOrders = async () => {
     try {
-      const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-      setOrders(savedOrders);
+      const response = await fetch("https://localhost:7183/api/Product/Orders");
+      if (!response.ok) {
+        throw new Error("Failed to fetch orders");
+      }
+      const data = await response.json();
+      setOrders(data);
     } catch (error) {
-      console.error("Failed to load orders from localStorage:", error);
+      console.error("Error fetching orders:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchOrders();
   }, []);
 
-  // Update order status
-  const updateOrderStatus = (orderId, newStatus) => {
+  // Update order status using correct API
+  const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const updatedOrders = orders.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
+      const response = await fetch(`https://localhost:7183/api/Product/UpdateStatus/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update order status");
+      }
+
+      // Update frontend state
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
       );
-      setOrders(updatedOrders);
-      localStorage.setItem("orders", JSON.stringify(updatedOrders));
     } catch (error) {
-      console.error("Failed to update order status:", error);
+      console.error("Error updating order status:", error);
     }
   };
 
@@ -40,6 +61,7 @@ const OrdersTable = ({ orders, updateOrderStatus }) => {
         <thead>
           <tr>
             <th>Order ID</th>
+            <th>Date</th>
             <th>Customer Name</th>
             <th>Phone</th>
             <th>Address</th>
@@ -51,18 +73,17 @@ const OrdersTable = ({ orders, updateOrderStatus }) => {
         <tbody>
           {orders.length === 0 ? (
             <tr>
-              <td colSpan="7" className="no-orders">
-                No orders found.
-              </td>
+              <td colSpan="8" className="no-orders">No orders found.</td>
             </tr>
           ) : (
             orders.map((order) => (
               <tr key={order.id}>
                 <td>{order.id}</td>
-                <td>{order.customerName}</td>
-                <td>{order.customerPhone}</td>
-                <td>{order.customerAddress}</td>
-                <td>${order.total.toFixed(2)}</td>
+                <td>{new Date(order.created).toLocaleString()}</td>
+                <td>{order.userName}</td>
+                <td>{order.phone}</td>
+                <td>{order.userAddress}</td>
+                <td>${parseFloat(order.bill).toFixed(2)}</td>
                 <td>
                   <select
                     value={order.status}
@@ -76,10 +97,8 @@ const OrdersTable = ({ orders, updateOrderStatus }) => {
                 </td>
                 <td>
                   <ul>
-                    {order.items.map((item, index) => (
-                      <li key={index}>
-                        {item.name} - ${item.price} x {item.quantity}
-                      </li>
+                    {order.productName.split(", ").map((item, index) => (
+                      <li key={index}>{item}</li>
                     ))}
                   </ul>
                 </td>
@@ -98,12 +117,9 @@ const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // Filter orders based on search term and status
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const matchesSearch = order.customerName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const matchesSearch = order.userName?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = filterStatus === "all" || order.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
@@ -121,14 +137,12 @@ const OrdersPage = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
-            aria-label="Search orders by customer name"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
           className="filter-select"
-          aria-label="Filter orders by status"
         >
           <option value="all">All Orders</option>
           <option value="pending">Pending</option>

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { FaSearch, FaList, FaBox, FaUsers, FaCog } from "react-icons/fa";
-import UsersPage from "./UsersPage"; // Import UsersPage
-import Settings from "./Settings"; // Import Settings
-import OrdersPage from "./OrdersPage"; // Import OrdersPage
+import { FaSearch, FaList, FaBox, FaUsers, FaCog, FaHistory } from "react-icons/fa";
+import UsersPage from "./UsersPage";
+import Settings from "./Settings";
+import OrdersPage from "./OrdersPage";
+import HistoryPage from "./HistoryPage"; // ✅ Import History Page
 import "../styles/AdminPanel.css";
 
 const AdminPanel = () => {
@@ -12,13 +13,15 @@ const AdminPanel = () => {
   const renderContent = () => {
     switch (activeMenu) {
       case "orders":
-        return <OrdersPage />; // Use OrdersPage
+        return <OrdersPage />;
       case "products":
         return <div className="card">Products Management</div>;
       case "users":
-        return <UsersPage />; // Use UsersPage
+        return <UsersPage />;
       case "settings":
-        return <Settings />; // Use Settings
+        return <Settings />;
+      case "history": // ✅ History option
+        return <HistoryPage />;
       default:
         return <div className="card">Select a menu option</div>;
     }
@@ -43,16 +46,6 @@ const AdminPanel = () => {
           <li>
             <a
               href="#!"
-              className={activeMenu === "products" ? "active" : ""}
-              onClick={() => setActiveMenu("products")}
-            >
-              <FaBox className="icon" />
-              <span>Products</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="#!"
               className={activeMenu === "users" ? "active" : ""}
               onClick={() => setActiveMenu("users")}
             >
@@ -68,6 +61,16 @@ const AdminPanel = () => {
             >
               <FaCog className="icon" />
               <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="#!"
+              className={activeMenu === "history" ? "active" : ""}
+              onClick={() => setActiveMenu("history")}
+            >
+              <FaHistory className="icon" />
+              <span>History</span>
             </a>
           </li>
         </ul>
